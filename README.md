@@ -11,3 +11,7 @@
 1. 點擊 [這裡的網址](你的GitHubPages連結) 進入遊戲。
 2. 根據 AI 主持人的引導開始提問（例如：你有幾隻腳？）。
 3. 嘗試用最少的次數猜出動物名稱！
+   
+## 📂 檔案結構
+* `index.html`: 前端遊戲介面（已部署於 GitHub Pages）。
+* `Code.gs`: 後端 Google Apps Script 程式碼，負責串接 Gemini API 並處理遊戲邏輯（請將此代碼部署於 GAS）。
