@@ -4,7 +4,7 @@
 
 ## 🚀 立即開始遊戲
 點擊下方連結即可開始挑戰：
-👉 **[點擊這裡開始遊戲](你的_GitHub_Pages_連結)** *(註：請在括號中換成你 GitHub Pages 的網址)*
+👉 **[點擊這裡開始遊戲]((https://weddy1225-blip.github.io/Science01/))**
 
 ---
 
