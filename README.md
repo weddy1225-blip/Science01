@@ -8,7 +8,7 @@
 * **最佳紀錄**：鼓勵學生挑戰以最精準的問題猜出正確答案。
 
 ## 📖 如何使用
-1. 點擊 [這裡的網址](https://weddy1225-blip.github.io/Science01/](https://weddy1225-blip.github.io/Science01/) 進入遊戲。
+1. 點擊 [這裡的網址](https://weddy1225-blip.github.io/Science01/) 進入遊戲。
 2. 根據 AI 主持人的引導開始提問（例如：你有幾隻腳？）。
 3. 嘗試用最少的次數猜出動物名稱！
    
