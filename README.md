@@ -4,7 +4,7 @@
 
 ## 🚀 立即開始遊戲
 點擊下方連結即可開始挑戰：
-👉 **[點擊這裡開始遊戲]((https://weddy1225-blip.github.io/Science01/))**
+👉 **[點擊這裡開始遊戲](https://weddy1225-blip.github.io/Science01/)**
 
 ---
 
