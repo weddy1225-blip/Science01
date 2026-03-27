@@ -2,243 +2,157 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>自然科猜謎：我是誰？</title>
+  <title>🐾 自然科猜謎遊戲：我是誰？</title>
   <style>
-    :root { 
-      --primary: #4caf50; 
-      --bg: #f0f2f5; 
-      --ai-bubble: #e3f2fd; 
-      --accent: #ff9800; 
-      --best: #e91e63; 
-    }
-    body { 
-      font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; 
-      background-color: var(--bg); 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      height: 100vh; 
-      margin: 0; 
-    }
-    #chat-container { 
-      width: 95%; 
-      max-width: 550px; 
-      height: 90vh; 
-      background: white; 
-      border-radius: 20px; 
-      display: flex; 
-      flex-direction: column; 
-      overflow: hidden; 
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
-      position: relative; 
-    }
-    
-    /* 計分板與紀錄區樣式 */
-    #scoreboard { 
-      background: var(--accent); 
-      color: white; 
-      padding: 12px; 
-      display: flex; 
-      justify-content: space-around; 
-      align-items: center; 
-      font-weight: bold; 
-      font-size: 16px; 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-      z-index: 10; 
-    }
-    .stat-box { text-align: center; flex: 1; }
-    .stat-val { font-size: 24px; display: block; margin-top: 2px; }
-    #best-record-box { 
-      background: var(--best); 
-      margin: 0 10px;
-      padding: 5px 15px; 
-      border-radius: 12px; 
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-    }
-
-    #chat-box { 
-      flex-grow: 1; 
-      padding: 20px; 
-      overflow-y: auto; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 15px; 
-      background: #fdfdfd; 
-    }
-    .message { 
-      padding: 14px 18px; 
-      border-radius: 20px; 
-      max-width: 85%; 
-      line-height: 1.6; 
-      font-size: 16px; 
-      word-wrap: break-word; 
-      white-space: pre-wrap; 
-    }
-    .ai-msg { 
-      background-color: var(--ai-bubble); 
-      align-self: flex-start; 
-      border-bottom-left-radius: 2px; 
-      color: #1a237e; 
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.05); 
-    }
-    .user-msg { 
-      background-color: var(--primary); 
-      color: white; 
-      align-self: flex-end; 
-      border-bottom-right-radius: 2px; 
-      box-shadow: -2px 2px 5px rgba(0,0,0,0.1); 
-    }
-    #input-area { 
-      display: flex; 
-      padding: 20px; 
-      background: white; 
-      border-top: 1px solid #eee; 
-    }
-    #user-input { 
-      flex-grow: 1; 
-      padding: 12px 20px; 
-      border: 2px solid #eee; 
-      border-radius: 30px; 
-      outline: none; 
-      font-size: 16px; 
-      transition: 0.3s;
-    }
-    #user-input:focus { border-color: var(--primary); }
-    #send-btn { 
-      background-color: var(--primary); 
-      color: white; 
-      border: none; 
-      padding: 0 25px; 
-      margin-left: 10px; 
-      border-radius: 30px; 
-      cursor: pointer; 
-      font-weight: bold; 
-      transition: 0.3s; 
-    }
-    #send-btn:hover { background-color: #45a049; transform: scale(1.05); }
-    #send-btn:active { transform: scale(0.95); }
+    :root { --primary: #4caf50; --secondary: #e3f2fd; --accent: #ff9800; --bg: #f0f7f4; }
+    body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; height: 100vh; }
+    #main-container { display: flex; gap: 20px; width: 100%; max-width: 950px; height: 90vh; }
+    #side-panel { width: 300px; display: flex; flex-direction: column; gap: 15px; }
+    .card { background: white; padding: 18px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .card h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 1.1em; }
+    .score-val { font-size: 24px; font-weight: bold; color: var(--accent); }
+    #chat-container { flex-grow: 1; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
+    #chat-box { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+    .message { padding: 14px 18px; border-radius: 20px; max-width: 85%; line-height: 1.6; }
+    .ai-msg { background-color: var(--secondary); align-self: flex-start; border-bottom-left-radius: 2px; color: #1a237e; }
+    .user-msg { background-color: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+    #input-area { display: flex; border-top: 1px solid #eee; padding: 18px; gap: 10px; }
+    #user-input { flex-grow: 1; padding: 12px 20px; border: 2px solid #eee; border-radius: 30px; outline: none; }
+    #send-btn { background-color: var(--primary); color: white; border: none; padding: 0 25px; border-radius: 30px; cursor: pointer; font-weight: bold; }
   </style>
 </head>
 <body>
 
-<div id="chat-container">
-  <div id="scoreboard">
-    <div class="stat-box">📊 當前提問 <span id="count-num" class="stat-val">0</span></div>
-    <div class="stat-box" id="best-record-box">🏆 最佳紀錄 <span id="best-num" class="stat-val">--</span></div>
+<div id="main-container">
+  <div id="side-panel">
+    <div class="card">
+      <h3>📜 遊戲規則</h3>
+      <p style="font-size: 14px; color: #666;">目標：用最少提問次數猜出動物！</p>
+    </div>
+    <div class="card">
+      <h3>📊 本局提問次數</h3>
+      <span id="current-count" class="score-val">0</span>
+    </div>
+    <div class="card" style="background: #fffde7;">
+      <h3>🏆 最佳紀錄</h3>
+      <span id="best-count" class="score-val">--</span>
+    </div>
+    <button onclick="resetAll()" style="margin-top:auto; padding: 10px; cursor: pointer;">🧹 清除所有紀錄</button>
   </div>
-  
-  <div id="chat-box">
-    <div class="message ai-msg">哈囉哈囉！小朋友們大家好！🎉🎉🎉 我是你們今天的「生物猜謎遊戲」主持人！🥳
 
-我是來帶大家一起玩個超——好玩的動物猜謎遊戲的！準備好了嗎？
-
-我們的遊戲規則很簡單喔：
-1. 我會隨機挑選一種很常見的動物，然後開始跟大家形容牠。
-2. **很重要喔！** 等遊戲開始後，我每次出題就只會描述動物，不會再重複介紹我自己了，要仔細聽我說的線索喔！
-3. 如果你們猜中了，我會超大聲地恭喜你，還會跟大家分析一下你是怎麼猜到的，超棒的！
-4. 不過，要是還沒猜中，我絕對不會告訴你答案是什麼，我會繼續給你線索，讓你動動腦喔！
-
-是不是聽起來很有趣啊？腦筋都準備好了嗎？眼睛都睜大了嗎？耳朵都豎起來了嗎？
-
-那我們就來開始第一回合的挑戰吧！你們準備好了嗎？ 猜猜我心裡想的是哪一種可愛的小動物呢？ 趕快來問我問題吧！ 😉✨</div>
-  </div>
-  <div id="input-area">
-    <input type="text" id="user-input" placeholder="問問看：你有幾隻腳？" autocomplete="off">
-    <button id="send-btn">發送</button>
+  <div id="chat-container">
+    <div id="chat-box">
+      <div class="message ai-msg">👋 哈囉！我已經選好一種動物囉，請開始提問吧！</div>
+    </div>
+    <div id="input-area">
+      <input type="text" id="user-input" placeholder="問問看：你有幾隻腳？" autocomplete="off">
+      <button id="send-btn">發送 🚀</button>
+    </div>
   </div>
 </div>
 
 <script>
-  // 🚨 這裡請貼上你在 GAS 部署後獲得的「網頁應用程式 URL」
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbwBGy95ncyz97nNDzzZjwd3xRE7Y9hGQDw1tCrYgAev2v6XW8Wua2JC6aWBoX-JSm1Z/exec'; 
-
   const chatBox = document.getElementById('chat-box');
   const userInput = document.getElementById('user-input');
   const sendBtn = document.getElementById('send-btn');
-  const countDisplay = document.getElementById('count-num');
-  const bestDisplay = document.getElementById('best-num');
+  const currentDisplay = document.getElementById('current-count');
+  const bestDisplay = document.getElementById('best-count');
+
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbxQKt8COuLogCiwiyLNUq6iBFqpHWQ3u2W6AAjG7SqZ4mMPQZC_nJTKHaE_8rmmJR34VA/exec'; 
 
   let questionCount = 0;
-  let bestRecord = Infinity;
-  // 初始歷史紀錄，讓 AI 知道已經完成開場
-  let chatHistory = [{ role: "model", parts: [{ text: "遊戲開始，主持人已完成熱情開場白。" }] }];
+  let memory = [];
+  let isGameOver = false; // 🚩 新增：追蹤遊戲是否結束
+
+  window.onload = () => {
+    const savedBest = localStorage.getItem('bioQuizBest');
+    if (savedBest) bestDisplay.textContent = savedBest;
+  };
 
   function addMessage(text, sender) {
     const msgDiv = document.createElement('div');
-    msgDiv.classList.add('message', sender === 'user' ? 'user-msg' : 'ai-msg');
-    msgDiv.innerText = text;
+    msgDiv.className = `message ${sender === 'user' ? 'user-msg' : 'ai-msg'}`;
+    msgDiv.textContent = text;
     chatBox.appendChild(msgDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
+
+    memory.push({ "role": sender === 'user' ? "user" : "model", "parts": [{ "text": text }] });
+
+    // 判斷答對邏輯
+    if (sender === 'ai' && (text.includes('恭喜') || text.includes('答對了'))) {
+      if (!isGameOver) { // 確保只在剛答對時存檔一次
+        saveRecord();
+        isGameOver = true; 
+      }
+    }
+    
+    // 判斷玩家是否說要重玩
+    if (sender === 'ai' && (text.includes('下一種動物') || text.includes('開始提問'))) {
+      startNewRound();
+    }
   }
 
   async function sendMessage() {
     const text = userInput.value.trim();
     if (!text) return;
 
-    // --- 歸零與計數邏輯 ---
-    const resetKeywords = ["要", "好", "好啊", "開始", "再玩一局", "玩", "ok", "OK", "可以", "挑戰"];
-    const lastAiMsg = chatHistory[chatHistory.length - 1].parts[0].text;
-    const isAiAskingToPlayAgain = lastAiMsg.includes("再玩一局") || lastAiMsg.includes("挑戰");
-    
-    let isResetAction = false;
-
-    // 如果 AI 剛問完要不要再玩，且玩家說「好」，則次數歸零且本次不計次
-    if (isAiAskingToPlayAgain && resetKeywords.some(k => text.includes(k))) {
-      questionCount = 0;
-      isResetAction = true;
-    } else {
+    // 只有在「遊戲進行中」且不是在回答「好/不好」時才計分
+    if (!isGameOver) {
       questionCount++;
+      currentDisplay.textContent = questionCount;
     }
-    
-    countDisplay.innerText = questionCount;
-    // ----------------------
 
     addMessage(text, 'user');
     userInput.value = '';
-    chatHistory.push({ role: "user", parts: [{ text: text }] });
 
     const loadingDiv = document.createElement('div');
     loadingDiv.className = 'message ai-msg';
-    loadingDiv.innerText = '思考中...';
+    loadingDiv.textContent = '⚡ 思考中...';
     chatBox.appendChild(loadingDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
 
     try {
       const response = await fetch(GAS_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ 
-          message: text,
-          history: chatHistory 
-        })
+        body: JSON.stringify({ history: memory })
       });
-      
       const data = await response.json();
       chatBox.removeChild(loadingDiv);
-      
-      if (data.reply) {
-        addMessage(data.reply, 'ai');
-        chatHistory.push({ role: "model", parts: [{ text: data.reply }] });
-
-        // 判定答對並更新最佳紀錄
-        if (!isResetAction && (data.reply.includes("恭喜") || data.reply.includes("答對了"))) {
-          if (questionCount < bestRecord) {
-            bestRecord = questionCount;
-            bestDisplay.innerText = bestRecord;
-          }
-        }
-      }
+      addMessage(data.reply, 'ai');
     } catch (error) {
-      if (chatBox.contains(loadingDiv)) chatBox.removeChild(loadingDiv);
-      addMessage('連線出錯了，請稍後再試！', 'ai');
-      console.error(error);
+      chatBox.removeChild(loadingDiv);
+      addMessage('❌ 連線異常！', 'ai');
+    }
+  }
+
+  function saveRecord() {
+    const savedBest = localStorage.getItem('bioQuizBest');
+    if (!savedBest || questionCount < parseInt(savedBest)) {
+      localStorage.setItem('bioQuizBest', questionCount);
+      bestDisplay.textContent = questionCount;
+      // 增加視覺回饋
+      bestDisplay.style.color = "#f44336";
+      setTimeout(() => { bestDisplay.style.color = "var(--accent)"; }, 2000);
+    }
+  }
+
+  function startNewRound() {
+    // 歸零計數器
+    questionCount = 0;
+    currentDisplay.textContent = "0";
+    isGameOver = false; // 重新開始計分
+    // 清除記憶，讓 AI 重新選動物
+    memory = memory.slice(-1); // 只保留最後一句作為開場
+  }
+
+  function resetAll() {
+    if(confirm("確定要清除最佳紀錄嗎？")) {
+      localStorage.removeItem('bioQuizBest');
+      location.reload();
     }
   }
 
   sendBtn.addEventListener('click', sendMessage);
   userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 </script>
-
 </body>
 </html>
