@@ -2,10 +2,11 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🐾 自然科猜謎遊戲：我是誰？</title>
   <style>
     :root { --primary: #4caf50; --secondary: #e3f2fd; --accent: #ff9800; --bg: #f0f7f4; }
-    body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; height: 100vh; }
+    body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; height: 100vh; box-sizing: border-box; }
     #main-container { display: flex; gap: 20px; width: 100%; max-width: 950px; height: 90vh; }
     #side-panel { width: 300px; display: flex; flex-direction: column; gap: 15px; }
     .card { background: white; padding: 18px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
@@ -13,12 +14,17 @@
     .score-val { font-size: 24px; font-weight: bold; color: var(--accent); }
     #chat-container { flex-grow: 1; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
     #chat-box { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-    .message { padding: 14px 18px; border-radius: 20px; max-width: 85%; line-height: 1.6; }
+    .message { padding: 14px 18px; border-radius: 20px; max-width: 85%; line-height: 1.6; word-wrap: break-word; }
     .ai-msg { background-color: var(--secondary); align-self: flex-start; border-bottom-left-radius: 2px; color: #1a237e; }
     .user-msg { background-color: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-    #input-area { display: flex; border-top: 1px solid #eee; padding: 18px; gap: 10px; }
-    #user-input { flex-grow: 1; padding: 12px 20px; border: 2px solid #eee; border-radius: 30px; outline: none; }
-    #send-btn { background-color: var(--primary); color: white; border: none; padding: 0 25px; border-radius: 30px; cursor: pointer; font-weight: bold; }
+    #input-area { display: flex; border-top: 1px solid #eee; padding: 18px; gap: 10px; background: white; }
+    #user-input { flex-grow: 1; padding: 12px 20px; border: 2px solid #eee; border-radius: 30px; outline: none; transition: border 0.3s; }
+    #user-input:focus { border-color: var(--primary); }
+    #send-btn { background-color: var(--primary); color: white; border: none; padding: 0 25px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    #send-btn:hover { background-color: #388e3c; }
+    #send-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+    .reset-btn { margin-top: auto; padding: 12px; background: #fff; border: 1px solid #ddd; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+    .reset-btn:hover { background: #fee; color: #d32f2f; }
   </style>
 </head>
 <body>
@@ -27,7 +33,7 @@
   <div id="side-panel">
     <div class="card">
       <h3>📜 遊戲規則</h3>
-      <p style="font-size: 14px; color: #666;">目標：用最少提問次數猜出動物！</p>
+      <p style="font-size: 14px; color: #666;">目標：用最少提問次數猜出動物！AI 已經準備好題目囉。</p>
     </div>
     <div class="card">
       <h3>📊 本局提問次數</h3>
@@ -37,7 +43,7 @@
       <h3>🏆 最佳紀錄</h3>
       <span id="best-count" class="score-val">--</span>
     </div>
-    <button onclick="resetAll()" style="margin-top:auto; padding: 10px; cursor: pointer;">🧹 清除所有紀錄</button>
+    <button class="reset-btn" onclick="resetAll()">🧹 清除所有紀錄</button>
   </div>
 
   <div id="chat-container">
@@ -58,11 +64,12 @@
   const currentDisplay = document.getElementById('current-count');
   const bestDisplay = document.getElementById('best-count');
 
+  // 請確保這是你部署的 GAS 網址
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbxQKt8COuLogCiwiyLNUq6iBFqpHWQ3u2W6AAjG7SqZ4mMPQZC_nJTKHaE_8rmmJR34VA/exec'; 
 
   let questionCount = 0;
   let memory = [];
-  let isGameOver = false; // 🚩 新增：追蹤遊戲是否結束
+  let isGameOver = false;
 
   window.onload = () => {
     const savedBest = localStorage.getItem('bioQuizBest');
@@ -80,7 +87,7 @@
 
     // 判斷答對邏輯
     if (sender === 'ai' && (text.includes('恭喜') || text.includes('答對了'))) {
-      if (!isGameOver) { // 確保只在剛答對時存檔一次
+      if (!isGameOver) {
         saveRecord();
         isGameOver = true; 
       }
@@ -96,7 +103,10 @@
     const text = userInput.value.trim();
     if (!text) return;
 
-    // 只有在「遊戲進行中」且不是在回答「好/不好」時才計分
+    // --- 優化點：發送後清空 placeholder ---
+    userInput.placeholder = ""; 
+
+    // 只有在「遊戲進行中」才計分
     if (!isGameOver) {
       questionCount++;
       currentDisplay.textContent = questionCount;
@@ -104,11 +114,16 @@
 
     addMessage(text, 'user');
     userInput.value = '';
+    
+    // 禁用按鈕防止重複點擊
+    sendBtn.disabled = true;
 
     const loadingDiv = document.createElement('div');
     loadingDiv.className = 'message ai-msg';
+    loadingDiv.id = 'loading-msg';
     loadingDiv.textContent = '⚡ 思考中...';
     chatBox.appendChild(loadingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
 
     try {
       const response = await fetch(GAS_URL, {
@@ -116,11 +131,17 @@
         body: JSON.stringify({ history: memory })
       });
       const data = await response.json();
-      chatBox.removeChild(loadingDiv);
+      
+      const loader = document.getElementById('loading-msg');
+      if(loader) chatBox.removeChild(loader);
+      
       addMessage(data.reply, 'ai');
     } catch (error) {
-      chatBox.removeChild(loadingDiv);
-      addMessage('❌ 連線異常！', 'ai');
+      const loader = document.getElementById('loading-msg');
+      if(loader) chatBox.removeChild(loader);
+      addMessage('❌ 連線異常，請檢查網路或 GAS 設定！', 'ai');
+    } finally {
+      sendBtn.disabled = false;
     }
   }
 
@@ -129,30 +150,31 @@
     if (!savedBest || questionCount < parseInt(savedBest)) {
       localStorage.setItem('bioQuizBest', questionCount);
       bestDisplay.textContent = questionCount;
-      // 增加視覺回饋
       bestDisplay.style.color = "#f44336";
       setTimeout(() => { bestDisplay.style.color = "var(--accent)"; }, 2000);
     }
   }
 
   function startNewRound() {
-    // 歸零計數器
     questionCount = 0;
     currentDisplay.textContent = "0";
-    isGameOver = false; // 重新開始計分
-    // 清除記憶，讓 AI 重新選動物
-    memory = memory.slice(-1); // 只保留最後一句作為開場
+    isGameOver = false;
+    // 重啟遊戲時恢復提示文字
+    userInput.placeholder = "問問看：你有幾隻腳？"; 
+    memory = memory.slice(-1); 
   }
 
   function resetAll() {
-    if(confirm("確定要清除最佳紀錄嗎？")) {
+    if(confirm("確定要清除所有紀錄並重新開始嗎？")) {
       localStorage.removeItem('bioQuizBest');
       location.reload();
     }
   }
 
   sendBtn.addEventListener('click', sendMessage);
-  userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+  userInput.addEventListener('keypress', (e) => { 
+    if (e.key === 'Enter' && !sendBtn.disabled) sendMessage(); 
+  });
 </script>
 </body>
 </html>
