@@ -103,8 +103,9 @@
     const text = userInput.value.trim();
     if (!text) return;
 
-    // --- 優化點：發送後清空 placeholder ---
-    userInput.placeholder = ""; 
+    // *** 關鍵修改處：在送出的第一時間立刻清空 Placeholder ***
+    // 無論遊戲是否結束，只要送出問題，佔位符就應該清空
+    userInput.setAttribute('placeholder', ''); 
 
     // 只有在「遊戲進行中」才計分
     if (!isGameOver) {
@@ -142,6 +143,8 @@
       addMessage('❌ 連線異常，請檢查網路或 GAS 設定！', 'ai');
     } finally {
       sendBtn.disabled = false;
+      // 確保回應後焦點回到輸入框，方便連續輸入
+      userInput.focus(); 
     }
   }
 
@@ -159,8 +162,8 @@
     questionCount = 0;
     currentDisplay.textContent = "0";
     isGameOver = false;
-    // 重啟遊戲時恢復提示文字
-    userInput.placeholder = "問問看：你有幾隻腳？"; 
+    // 重啟遊戲時，將提示文字恢復原狀
+    userInput.setAttribute('placeholder', '問問看：你有幾隻腳？');
     memory = memory.slice(-1); 
   }
 
